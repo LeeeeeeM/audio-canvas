@@ -1,4 +1,4 @@
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState, ChangeEvent } from 'react';
 import type { AudioSourceDescriptor } from '../hooks/useAudioEngine';
 
 interface SourceSelectorProps {
@@ -8,8 +8,18 @@ interface SourceSelectorProps {
 
 export const SourceSelector = ({ onSelect, loading }: SourceSelectorProps) => {
   const [url, setUrl] = useState('');
+  const [sampleUrl, setSampleUrl] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [fileName, setFileName] = useState('');
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    const localUrl = `${window.location.origin}/jiumengyichang.mp3`;
+    setSampleUrl(localUrl);
+    setUrl((current) => current || localUrl);
+  }, []);
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -26,7 +36,7 @@ export const SourceSelector = ({ onSelect, loading }: SourceSelectorProps) => {
     }
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) {
       return;
@@ -61,6 +71,7 @@ export const SourceSelector = ({ onSelect, loading }: SourceSelectorProps) => {
             {loading ? '加载中…' : '加载'}
           </button>
         </div>
+        {sampleUrl && <p className="source-selector__hint">默认示例：{sampleUrl}</p>}
         {error && <p className="source-selector__error">{error}</p>}
       </form>
 

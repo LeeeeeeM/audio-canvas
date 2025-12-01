@@ -26,8 +26,8 @@ export default [
     },
     plugins: {
       react,
-      hooks,
-      reactRefresh,
+      'react-hooks': hooks,
+      'react-refresh': reactRefresh,
       '@typescript-eslint': tseslint
     },
     rules: {

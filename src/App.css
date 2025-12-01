@@ -134,6 +134,13 @@
   margin: 0;
 }
 
+.source-selector__hint {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
 .visualizer-panel {
   border-radius: 20px;
   padding: 1.5rem;
