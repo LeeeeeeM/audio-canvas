@@ -3,7 +3,8 @@
 一个使用 **React + Vite + TypeScript + Web Audio API** 构建的音乐可视化工具，支持加载在线音频链接以及本地音频文件，通过频谱 / 波形图实时展示声音变化，并提供完整的播放控制与进度拖动体验。
 
 ## 功能特性
-- **多音源输入**：支持 http(s) 远程链接与本地文件上传，自动判断类型并加载。
+- **多音源输入**：支持 http(s) 远程链接、本地文件上传，以及虚拟拇指琴实时演奏。
+- **流式实时生成**：内置和弦合成器，可一键生成持续音流（不可快进/后退），用于验证纯流式场景。
 - **Web Audio 可视化**：内置频谱柱状图与波形两种模式，可在运行时切换。
 - **完整播放控制**：播放 / 暂停 / 停止、音量调节、进度条拖动（拖动时自动暂停，松开后续播）。
 - **错误提示与加载状态**：无效链接、跨域失败、本地解析错误等都会提示，方便排错。
@@ -32,6 +33,8 @@ pnpm lint
    - 加载成功后即可播放；暂停时再次播放会从暂停点继续。
    - 进度条支持拖动：按下时自动暂停，松开后跳转到新位置并按需恢复播放。
    - 调节音量滑块即可实时改变输出音量。
+   - 选择「启动实时流」即可启用和弦合成模式，该模式为纯流式输出，不支持进度拖动。
+   - 选择「进入拇指琴模式」后，可在下方 17 键布局上点击演奏，实时驱动可视化。
 3. **可视化模式**
    - 右上角单选按钮可在「频谱」「波形」之间切换，画面会实时更新。
 
@@ -40,7 +43,8 @@ pnpm lint
 ├── src/
 │   ├── components/
 │   │   ├── AudioControls.tsx      # 播放控制与进度条
-│   │   ├── SourceSelector.tsx     # URL 输入 + 文件上传
+│   │   ├── SourceSelector.tsx     # URL 输入 / 本地上传 / 流式/拇指琴入口
+│   │   ├── KalimbaKeyboard.tsx    # 17 键拇指琴组件
 │   │   └── VisualizerCanvas.tsx   # Canvas 容器
 │   ├── hooks/
 │   │   ├── useAudioEngine.ts      # 管理 AudioContext/播放状态
@@ -48,6 +52,8 @@ pnpm lint
 │   ├── App.tsx / App.css          # 布局与样式
 │   ├── main.tsx / index.css       # 入口与全局样式
 │   └── vite-env.d.ts
+├── public/jiumengyichang.mp3
+├── public/worklets/harmonic-generator.js
 ├── public/vite.svg
 ├── package.json / pnpm-lock.yaml
 ├── vite.config.ts / tsconfig*.json

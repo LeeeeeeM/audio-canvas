@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { AudioControls } from './components/AudioControls';
-import { SourceSelector } from './components/SourceSelector';
+import { KalimbaKeyboard } from './components/KalimbaKeyboard';
+import { SourceSelector, type SourceMode } from './components/SourceSelector';
 import { VisualizerCanvas } from './components/VisualizerCanvas';
 import { useAudioEngine, type AudioSourceDescriptor } from './hooks/useAudioEngine';
 import type { VisualizerMode } from './hooks/useVisualizer';
@@ -13,6 +14,7 @@ const visualizerModes: { label: string; value: VisualizerMode }[] = [
 
 const App = () => {
   const [mode, setMode] = useState<VisualizerMode>('spectrum');
+  const [sourceTab, setSourceTab] = useState<SourceMode>('media');
   const [isLoadingSource, setIsLoadingSource] = useState(false);
   const {
     analyserNode,
@@ -26,7 +28,9 @@ const App = () => {
     volume,
     setVolume,
     currentTime,
-    duration
+    duration,
+    activeSource,
+    triggerInstrumentNote
   } = useAudioEngine();
 
   const handleSourceSelect = useCallback(
@@ -54,6 +58,12 @@ const App = () => {
   }, [stop]);
 
   const disabled = isLoadingSource || state === 'loading';
+  const isInstrument = activeSource === 'instrument';
+  const isStream = activeSource === 'stream';
+  const showControls = sourceTab !== 'instrument';
+  const showKalimba = sourceTab === 'instrument' && isInstrument;
+  const controlsDisabled = disabled || isInstrument;
+  const allowSeek = !(isInstrument || isStream);
 
   return (
     <main className="app">
@@ -67,20 +77,36 @@ const App = () => {
 
       <section className="app__content">
         <div className="app__column app__column--controls">
-          <SourceSelector onSelect={handleSourceSelect} loading={disabled} />
-          {errorMessage && <p className="app__error">{errorMessage}</p>}
-          <AudioControls
-            state={state}
-            onPlay={handlePlay}
-            onPause={handlePause}
-            onStop={handleStop}
-            onSeek={seekTo}
-            volume={volume}
-            onVolumeChange={setVolume}
-            currentTime={currentTime}
-            duration={duration}
-            disabled={disabled}
+          <SourceSelector
+            onSelect={handleSourceSelect}
+            loading={disabled}
+            activeTab={sourceTab}
+            onTabChange={setSourceTab}
           />
+          {errorMessage && <p className="app__error">{errorMessage}</p>}
+          {showControls && (
+            <AudioControls
+              state={state}
+              onPlay={handlePlay}
+              onPause={handlePause}
+              onStop={handleStop}
+              onSeek={seekTo}
+              volume={volume}
+              onVolumeChange={setVolume}
+              currentTime={currentTime}
+              duration={duration}
+              disabled={controlsDisabled}
+              allowSeek={allowSeek}
+            />
+          )}
+
+          {showKalimba && (
+            <section className="kalimba-panel">
+              <h3>拇指琴实时演奏</h3>
+              <p>点击琴键即可触发音符，可视化会实时响应。</p>
+              <KalimbaKeyboard onPlayNote={triggerInstrumentNote} />
+            </section>
+          )}
         </div>
 
         <div className="app__column app__column--visualizer">

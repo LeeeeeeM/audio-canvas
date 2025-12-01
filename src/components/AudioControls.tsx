@@ -12,6 +12,7 @@ interface AudioControlsProps {
   currentTime: number;
   duration: number;
   disabled?: boolean;
+  allowSeek?: boolean;
 }
 
 const formatTime = (value: number) => {
@@ -37,7 +38,8 @@ export const AudioControls = ({
   onVolumeChange,
   currentTime,
   duration,
-  disabled = false
+  disabled = false,
+  allowSeek = true
 }: AudioControlsProps) => {
   const isPlaying = state === 'playing';
   const canControl = state === 'ready' || state === 'paused' || state === 'playing';
@@ -49,7 +51,7 @@ export const AudioControls = ({
   const progress = duration > 0 ? Math.min((displayedTime / duration) * 100, 100) : 0;
 
   const beginSeek = () => {
-    if (!canControl || disabled) {
+    if (!canControl || disabled || !allowSeek) {
       return;
     }
     setIsSeeking(true);
@@ -73,7 +75,7 @@ export const AudioControls = ({
   };
 
   const handleSeekChange = (value: number) => {
-    if (!Number.isFinite(duration) || duration <= 0) {
+    if (!Number.isFinite(duration) || duration <= 0 || !allowSeek) {
       return;
     }
     if (isSeeking) {
@@ -95,33 +97,39 @@ export const AudioControls = ({
         <span className="audio-controls__state">当前状态：{state}</span>
       </div>
 
-      <div className="audio-controls__timeline">
-        <div className="audio-controls__track">
-          <div className="audio-controls__progress" style={{ width: `${progress}%` }} />
-        </div>
-        <input
-          className="audio-controls__seek"
-          type="range"
-          min={0}
-          max={Number.isFinite(duration) && duration > 0 ? duration : 0}
-          step="0.01"
-          value={Number.isFinite(displayedTime) ? displayedTime : 0}
-          onChange={(event) => handleSeekChange(Number(event.target.value))}
-          onPointerDown={beginSeek}
-          onPointerUp={() => {
-            void commitSeek();
-          }}
-          onPointerCancel={() => {
-            void commitSeek();
-          }}
-          onPointerLeave={(event) => {
-            if (event.pointerType === 'mouse') {
+      {allowSeek ? (
+        <div className="audio-controls__timeline">
+          <div className="audio-controls__track">
+            <div className="audio-controls__progress" style={{ width: `${progress}%` }} />
+          </div>
+          <input
+            className="audio-controls__seek"
+            type="range"
+            min={0}
+            max={Number.isFinite(duration) && duration > 0 ? duration : 0}
+            step="0.01"
+            value={Number.isFinite(displayedTime) ? displayedTime : 0}
+            onChange={(event) => handleSeekChange(Number(event.target.value))}
+            onPointerDown={beginSeek}
+            onPointerUp={() => {
               void commitSeek();
-            }
-          }}
-          disabled={!canControl || disabled || !Number.isFinite(duration) || duration <= 0}
-        />
-      </div>
+            }}
+            onPointerCancel={() => {
+              void commitSeek();
+            }}
+            onPointerLeave={(event) => {
+              if (event.pointerType === 'mouse') {
+                void commitSeek();
+              }
+            }}
+            disabled={!canControl || disabled || !Number.isFinite(duration) || duration <= 0}
+          />
+        </div>
+      ) : (
+        <div className="audio-controls__timeline audio-controls__timeline--disabled">
+          当前模式不支持拖动进度
+        </div>
+      )}
       <div className="audio-controls__time">
         <span>{formatTime(displayedTime)}</span>
         <span>{formatTime(duration)}</span>
