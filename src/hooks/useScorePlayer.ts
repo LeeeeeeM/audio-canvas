@@ -12,7 +12,7 @@ export const useScorePlayer = (
 ) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | null>(null);
-  const timeoutRefsRef = useRef<NodeJS.Timeout[]>([]);
+  const timeoutRefsRef = useRef<number[]>([]);
   const currentIndexRef = useRef<number>(0);
 
   // 根据 code 找到对应的琴键索引

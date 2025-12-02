@@ -1,6 +1,9 @@
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
-import monacoEditorPlugin from 'vite-plugin-monaco-editor';
+import monacoEditorPluginModule from 'vite-plugin-monaco-editor';
+
+// @ts-ignore - CommonJS module
+const monacoEditorPlugin = monacoEditorPluginModule.default;
 
 export default defineConfig({
   plugins: [

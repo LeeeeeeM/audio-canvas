@@ -23,3 +23,6 @@ coverage/
 # Misc
 *.local
 .env.local
+
+# TypeScript build info
+*.tsbuildinfo
