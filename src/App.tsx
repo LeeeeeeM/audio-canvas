@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react';
+import { Radio } from 'antd';
 import { AudioControls } from './components/AudioControls';
 import { KalimbaKeyboard } from './components/KalimbaKeyboard';
 import { SourceSelector, type SourceMode } from './components/SourceSelector';
@@ -76,6 +77,26 @@ const App = () => {
       </header>
 
       <section className="app__content">
+        <div className="app__column app__column--visualizer">
+          <section className="visualizer-panel">
+            <div className="visualizer-panel__header">
+              <h2>实时可视化</h2>
+              <Radio.Group
+                value={mode}
+                onChange={(e) => setMode(e.target.value)}
+                className="visualizer-panel__modes"
+              >
+                {visualizerModes.map(({ label, value }) => (
+                  <Radio key={value} value={value}>
+                    {label}
+                  </Radio>
+                ))}
+              </Radio.Group>
+            </div>
+            <VisualizerCanvas analyser={analyserNode} mode={mode} />
+          </section>
+        </div>
+
         <div className="app__column app__column--controls">
           <SourceSelector
             onSelect={handleSourceSelect}
@@ -102,34 +123,10 @@ const App = () => {
 
           {showKalimba && (
             <section className="kalimba-panel">
-              <h3>拇指琴实时演奏</h3>
               <p>点击琴键即可触发音符，可视化会实时响应。</p>
               <KalimbaKeyboard onPlayNote={triggerInstrumentNote} />
             </section>
           )}
-        </div>
-
-        <div className="app__column app__column--visualizer">
-          <section className="visualizer-panel">
-            <div className="visualizer-panel__header">
-              <h2>实时可视化</h2>
-              <div className="visualizer-panel__modes">
-                {visualizerModes.map(({ label, value }) => (
-                  <label key={value}>
-                    <input
-                      type="radio"
-                      name="visualizer-mode"
-                      value={value}
-                      checked={mode === value}
-                      onChange={() => setMode(value)}
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </div>
-            <VisualizerCanvas analyser={analyserNode} mode={mode} />
-          </section>
         </div>
       </section>
     </main>

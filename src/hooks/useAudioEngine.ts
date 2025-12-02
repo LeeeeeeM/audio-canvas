@@ -1,22 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+// 17-key kalimba arranged visually from left to right (outermost to innermost)
 const KALIMBA_KEYS = [
-  { label: 'C4', freq: 261.63 },
-  { label: 'D4', freq: 293.66 },
-  { label: 'E4', freq: 329.63 },
-  { label: 'F4', freq: 349.23 },
-  { label: 'G4', freq: 392 },
-  { label: 'A4', freq: 440 },
-  { label: 'B4', freq: 493.88 },
-  { label: 'C5', freq: 523.25 },
-  { label: 'D5', freq: 587.33 },
-  { label: 'E5', freq: 659.25 },
-  { label: 'F5', freq: 698.46 },
-  { label: 'G5', freq: 783.99 },
-  { label: 'A5', freq: 880 },
-  { label: 'B5', freq: 987.77 },
-  { label: 'C6', freq: 1046.5 },
   { label: 'D6', freq: 1174.66 },
+  { label: 'B5', freq: 987.77 },
+  { label: 'G5', freq: 783.99 },
+  { label: 'E5', freq: 659.25 },
+  { label: 'C5', freq: 523.25 },
+  { label: 'A4', freq: 440 },
+  { label: 'F4', freq: 349.23 },
+  { label: 'D4', freq: 293.66 },
+  { label: 'C4', freq: 261.63 },
+  { label: 'E4', freq: 329.63 },
+  { label: 'G4', freq: 392 },
+  { label: 'B4', freq: 493.88 },
+  { label: 'D5', freq: 587.33 },
+  { label: 'F5', freq: 698.46 },
+  { label: 'A5', freq: 880 },
+  { label: 'C6', freq: 1046.5 },
   { label: 'E6', freq: 1318.51 }
 ];
 
@@ -166,13 +167,14 @@ export const useAudioEngine = () => {
 
       decodedBufferRef.current = null;
       disconnectBufferSource();
+      disconnectStreamNode();
       resetBufferState();
       setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
       setCurrentTime(0);
       setActiveSource('url');
       setState('ready');
     },
-    [disconnectBufferSource, ensureContext, handleMediaElementEnded, resetBufferState]
+    [disconnectBufferSource, disconnectStreamNode, ensureContext, handleMediaElementEnded, resetBufferState]
   );
 
   const loadFileSource = useCallback(
@@ -189,6 +191,7 @@ export const useAudioEngine = () => {
 
       decodedBufferRef.current = decoded;
       disconnectBufferSource();
+      disconnectStreamNode();
       resetBufferState();
       mediaElementRef.current?.pause();
       mediaElementRef.current && (mediaElementRef.current.currentTime = 0);
@@ -197,7 +200,7 @@ export const useAudioEngine = () => {
       setActiveSource('file');
       setState('ready');
     },
-    [disconnectBufferSource, ensureContext, resetBufferState]
+    [disconnectBufferSource, disconnectStreamNode, ensureContext, resetBufferState]
   );
 
   const loadSource = useCallback(
