@@ -254,6 +254,17 @@
   background: linear-gradient(180deg, #ef4444, #dc2626);
 }
 
+.kalimba__key--active {
+  background: linear-gradient(180deg, #38bdf8, #0ea5e9) !important;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.6), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+  transform: translateY(2px);
+}
+
+.kalimba__key--highlight.kalimba__key--active {
+  background: linear-gradient(180deg, #f87171, #ef4444) !important;
+  box-shadow: 0 0 12px rgba(248, 113, 113, 0.6), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+}
+
 .kalimba__degree-wrapper {
   display: flex;
   flex-direction: column;
@@ -284,6 +295,18 @@
 .kalimba__note {
   font-size: 0.65rem;
   color: #cbd5f5;
+}
+
+.kalimba__keyboard-hint {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.3rem;
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .visualizer-panel {

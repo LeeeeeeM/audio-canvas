@@ -123,7 +123,7 @@ const App = () => {
 
           {showKalimba && (
             <section className="kalimba-panel">
-              <p>点击琴键即可触发音符，可视化会实时响应。</p>
+              <p>点击琴键或使用键盘（qwer / asdfg / jkl; / uiop）即可触发音符，可视化会实时响应。</p>
               <KalimbaKeyboard onPlayNote={triggerInstrumentNote} />
             </section>
           )}
