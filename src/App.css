@@ -265,6 +265,27 @@
   box-shadow: 0 0 12px rgba(248, 113, 113, 0.6), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
 }
 
+.kalimba__key--score-active {
+  background: linear-gradient(180deg, #fbbf24, #f59e0b) !important;
+  box-shadow: 0 0 16px rgba(251, 191, 36, 0.8), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+  transform: translateY(1px);
+  animation: score-pulse 0.5s ease-in-out infinite;
+}
+
+.kalimba__key--highlight.kalimba__key--score-active {
+  background: linear-gradient(180deg, #fb923c, #f97316) !important;
+  box-shadow: 0 0 16px rgba(251, 146, 60, 0.8), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+}
+
+@keyframes score-pulse {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.8), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 1), inset 0 -6px 10px rgba(0, 0, 0, 0.35);
+  }
+}
+
 .kalimba__degree-wrapper {
   display: flex;
   flex-direction: column;

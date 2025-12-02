@@ -1,10 +1,12 @@
 import { useCallback, useState } from 'react';
-import { Radio } from 'antd';
+import { Radio, Button } from 'antd';
 import { AudioControls } from './components/AudioControls';
 import { KalimbaKeyboard } from './components/KalimbaKeyboard';
+import { ScoreEditor, type ScoreNote } from './components/ScoreEditor';
 import { SourceSelector, type SourceMode } from './components/SourceSelector';
 import { VisualizerCanvas } from './components/VisualizerCanvas';
 import { useAudioEngine, type AudioSourceDescriptor } from './hooks/useAudioEngine';
+import { useScorePlayer } from './hooks/useScorePlayer';
 import type { VisualizerMode } from './hooks/useVisualizer';
 import './App.css';
 
@@ -66,6 +68,27 @@ const App = () => {
   const controlsDisabled = disabled || isInstrument;
   const allowSeek = !(isInstrument || isStream);
 
+  // 乐谱编辑器状态
+  const [scoreEditorVisible, setScoreEditorVisible] = useState(false);
+  const [highlightedNoteIndex, setHighlightedNoteIndex] = useState<number | null>(null);
+
+  // 乐谱播放
+  const { play: playScore, stop: stopScore, isPlaying: isScorePlaying } = useScorePlayer(
+    triggerInstrumentNote,
+    setHighlightedNoteIndex
+  );
+
+  const handlePlayScore = useCallback(
+    (score: ScoreNote[]) => {
+      // 确保在拇指琴模式下
+      if (!isInstrument) {
+        handleSourceSelect({ kind: 'instrument' });
+      }
+      playScore(score);
+    },
+    [isInstrument, handleSourceSelect, playScore]
+  );
+
   return (
     <main className="app">
       <header className="app__header">
@@ -123,10 +146,24 @@ const App = () => {
 
           {showKalimba && (
             <section className="kalimba-panel">
-              <p>点击琴键或使用键盘（qwer / asdfg / jkl; / uiop）即可触发音符，可视化会实时响应。</p>
-              <KalimbaKeyboard onPlayNote={triggerInstrumentNote} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                <p style={{ margin: 0 }}>点击琴键或使用键盘（qwer / asdfg / jkl; / uiop）即可触发音符，可视化会实时响应。</p>
+                <Button type="primary" onClick={() => setScoreEditorVisible(true)}>
+                  乐谱编辑器
+                </Button>
+              </div>
+              <KalimbaKeyboard
+                onPlayNote={triggerInstrumentNote}
+                highlightedIndex={highlightedNoteIndex}
+              />
             </section>
           )}
+
+          <ScoreEditor
+            visible={scoreEditorVisible}
+            onClose={() => setScoreEditorVisible(false)}
+            onPlay={handlePlayScore}
+          />
         </div>
       </section>
     </main>

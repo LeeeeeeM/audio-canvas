@@ -15,7 +15,7 @@ type KalimbaKey = {
 // C4 (lowest, center) should be longest, D6 and E6 (highest, edges) should be shortest
 // Minimum height: 120px, step: 10px
 // Keyboard mapping: qwer (0-3), asdfg (4-8), jkl; (9-12), uiop (13-16)
-const KALIMBA_LAYOUT: KalimbaKey[] = [
+export const KALIMBA_LAYOUT: KalimbaKey[] = [
   { degree: '2', dots: 2, note: 'D6', height: 120, keyboardKey: 'q' }, // position 0
   { degree: '7', dots: 1, note: 'B5', height: 130, keyboardKey: 'w' }, // position 1
   { degree: '5', dots: 1, note: 'G5', height: 140, highlight: true, keyboardKey: 'e' }, // position 2 - RED
@@ -45,9 +45,10 @@ const KEYBOARD_MAP: Record<string, number> = {
 
 interface KalimbaKeyboardProps {
   onPlayNote: (index: number) => void;
+  highlightedIndex?: number | null; // 外部控制的高亮索引（用于乐谱播放）
 }
 
-export const KalimbaKeyboard = ({ onPlayNote }: KalimbaKeyboardProps) => {
+export const KalimbaKeyboard = ({ onPlayNote, highlightedIndex = null }: KalimbaKeyboardProps) => {
   const pressedKeysRef = useRef<Set<number>>(new Set());
   const [activeKeys, setActiveKeys] = useState<Set<number>>(new Set());
 
@@ -116,7 +117,7 @@ export const KalimbaKeyboard = ({ onPlayNote }: KalimbaKeyboardProps) => {
         <button
           type="button"
           key={key.note}
-          className={`kalimba__key${key.highlight ? ' kalimba__key--highlight' : ''}${activeKeys.has(index) ? ' kalimba__key--active' : ''}`}
+          className={`kalimba__key${key.highlight ? ' kalimba__key--highlight' : ''}${activeKeys.has(index) ? ' kalimba__key--active' : ''}${highlightedIndex === index ? ' kalimba__key--score-active' : ''}`}
           style={{ height: key.height }}
           onPointerDown={(event) => handlePointer(event, index)}
           onPointerUp={(event) => handlePointerUp(event, index)}
