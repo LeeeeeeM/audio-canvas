@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Drawer, Button } from 'antd';
 import Editor, { loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
@@ -41,6 +41,32 @@ export const ScoreEditor = ({ visible, onClose, onPlay }: ScoreEditorProps) => {
     JSON.stringify(DEFAULT_SCORE, null, 2)
   );
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 加载默认乐谱文件
+  useEffect(() => {
+    const loadDefaultScore = async () => {
+      try {
+        const response = await fetch('/大鱼海棠.json');
+        if (response.ok) {
+          const json = await response.json();
+          setScoreJson(JSON.stringify(json, null, 2));
+        } else {
+          // 如果文件不存在，使用默认乐谱
+          setScoreJson(JSON.stringify(DEFAULT_SCORE, null, 2));
+        }
+      } catch (err) {
+        // 加载失败时使用默认乐谱
+        setScoreJson(JSON.stringify(DEFAULT_SCORE, null, 2));
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (visible) {
+      loadDefaultScore();
+    }
+  }, [visible]);
 
   const handlePlay = () => {
     try {
@@ -91,23 +117,29 @@ export const ScoreEditor = ({ visible, onClose, onPlay }: ScoreEditorProps) => {
           {error}
         </div>
       )}
-      <Editor
-        height="calc(100vh - 200px)"
-        defaultLanguage="json"
-        value={scoreJson}
-        onChange={(value) => {
-          setScoreJson(value || '');
-          setError(null);
-        }}
-        theme="vs-dark"
-        options={{
-          minimap: { enabled: false },
-          fontSize: 14,
-          lineNumbers: 'on',
-          scrollBeyondLastLine: false,
-          automaticLayout: true
-        }}
-      />
+      {isLoading ? (
+        <div style={{ textAlign: 'center', padding: '2rem', color: '#999' }}>
+          加载默认乐谱中...
+        </div>
+      ) : (
+        <Editor
+          height="calc(100vh - 200px)"
+          defaultLanguage="json"
+          value={scoreJson}
+          onChange={(value) => {
+            setScoreJson(value || '');
+            setError(null);
+          }}
+          theme="vs-dark"
+          options={{
+            minimap: { enabled: false },
+            fontSize: 14,
+            lineNumbers: 'on',
+            scrollBeyondLastLine: false,
+            automaticLayout: true
+          }}
+        />
+      )}
     </Drawer>
   );
 };
